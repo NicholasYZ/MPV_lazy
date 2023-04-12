@@ -33,6 +33,7 @@ function Controls:init()
 		['editions'] = 'command:bookmarks:script-binding uosc/editions#editions>1?版本',
 		['stream-quality'] = 'command:high_quality:script-binding uosc/stream-quality?流品质',
 		['open-file'] = 'command:file_open:script-binding uosc/open-file?加载文件',
+		['import-url'] = 'command:import_url:script-binding uosc/import-url?打开链接',
 		['items'] = 'command:list_alt:script-binding uosc/items?播放列表/文件浏览器',
 		prev = 'command:arrow_back_ios:script-binding uosc/prev?上一个',
 		next = 'command:arrow_forward_ios:script-binding uosc/next?下一个',

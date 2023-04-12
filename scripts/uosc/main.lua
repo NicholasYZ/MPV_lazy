@@ -126,7 +126,8 @@ fgt, bgt = serialize_rgba(options.foreground_text).color, serialize_rgba(options
 local function create_default_menu()
 	return {
 		{title = '加载', items = {
-			{title = '※ 文件浏览器', value = 'script-binding uosc/open-file'},
+			{title = '※ 文件浏览器', value = 'script-binding uosc/import-url'},
+			{title = '※ 打开链接', value = 'script-binding uosc/import-url'},
 			{title = '※ 导入 字幕轨', value = 'script-binding uosc/load-subtitles'},
 		},},
 		{title = '导航', items = {
@@ -977,6 +978,28 @@ bind_command('open-file', function()
 			on_close = function() mp.unregister_event(handle_file_loaded) end,
 		}
 	)
+end)
+bind_command('import-url', function()
+	local was_ontop = mp.get_property_native("ontop")
+	if was_ontop then mp.set_property_native("ontop", false) end
+	local res = utils.subprocess({
+		args = {'powershell', '-NoProfile', '-Command', [[& {
+			Trap {
+				Write-Error -ErrorRecord $_
+				Exit 1
+			}
+			Add-Type -AssemblyName Microsoft.VisualBasic
+			$u8 = [System.Text.Encoding]::UTF8
+			$out = [Console]::OpenStandardOutput()
+			$urlname = [Microsoft.VisualBasic.Interaction]::InputBox("输入地址", "打开", "https://")
+			$u8urlname = $u8.GetBytes("$urlname")
+			$out.Write($u8urlname, 0, $u8urlname.Length)
+		}]]},
+		cancellable = false,
+	})
+	if was_ontop then mp.set_property_native("ontop", true) end
+	if (res.status ~= 0) then return end
+	mp.commandv("loadfile", res.stdout)
 end)
 bind_command('shuffle', function() set_state('shuffle', not state.shuffle) end)
 bind_command('items', function()
